@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+# Copyright (C) 2019 Jorge Canha
+# 
+# This file is part of asdf-pulumi.
+# 
+# asdf-pulumi is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# asdf-pulumi is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with asdf-pulumi.  If not, see <http://www.gnu.org/licenses/>.
+
+set -euo pipefail
+
+[ -z "${ASDF_INSTALL_TYPE+x}" ] && echo "ASDF_INSTALL_TYPE is required" && exit 1
+[ -z "${ASDF_INSTALL_VERSION+x}" ] && echo "ASDF_INSTALL_VERSION is required" && exit 1
+[ -z "${ASDF_INSTALL_PATH+x}" ] && echo "ASDF_INSTALL_PATH is required" && exit 1
+
+install() {
+  local repo_url="https://get.pulumi.com/releases/sdk"
+  local bin_name="pulumi"
+  local install_type=$1
+  [ "${install_type}" != "version" ] && echo "install type, ${install_type}, is not supported" && exit 1
+
+  local version=$2
+  local install_path=$3
+
+  local bin_install_path="${install_path}/bin"
+  local bin_path="${bin_install_path}/${bin_name}"
+
+  local platform
+  [ "Linux" = "$(uname)" ] && platform="linux" || platform="darwin"
+
+  if [ "$(uname -m)" != "x86_64" ]; then
+    echo "ERROR: only 64-bit platforms have releases"
+    exit 1
+  fi
+
+  local download_package="pulumi-v${version}-${platform}-x64.tar.gz"
+  local download_url="${repo_url}/${download_package}"
+
+  local temp_file
+  temp_file="$(mktemp -d)/${download_package}"
+
+  mkdir -p "${bin_install_path}"
+
+  echo "Downloading ${bin_name} from ${download_url}"
+  curl -sSL "${download_url}" -o "${temp_file}"
+  tar -xf "${temp_file}" --strip-components 1 -C "${bin_install_path}"
+  rm "${temp_file}"
+  chmod +x "${bin_path}"
+}
+
+install "${ASDF_INSTALL_TYPE}" "${ASDF_INSTALL_VERSION}" "${ASDF_INSTALL_PATH}"
