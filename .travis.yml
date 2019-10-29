@@ -5,7 +5,7 @@ before_script:
 script:
   - asdf plugin-add pulumi https://github.com/canha/asdf-pulumi.git
   - asdf list-all pulumi
-  - asdf plugin-test pulumi ./ 'pulumi --version'
+  - asdf plugin-test pulumi ./ 'pulumi version'
 os:
   - linux
   - osx
