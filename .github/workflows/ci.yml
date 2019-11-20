@@ -1,0 +1,36 @@
+---
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+
+    steps:
+      - name: clone the plugin repo
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: clone asdf
+        uses: actions/checkout@v1
+        with:
+          repository: asdf-vm/asdf.git
+          ref: refs/heads/master
+          fetch-depth: 1
+      - name: Setup asdf and run test
+        run: |
+          . ../asdf.git/asdf.sh
+          asdf plugin-add pulumi ./
+          asdf plugin-test pulumi ./ 'pulumi version' --asdf-tool-version 1.5.2
+        shell: bash
