@@ -52,7 +52,14 @@ install() {
   mkdir -p "${bin_install_path}"
 
   echo "Downloading ${bin_name} from ${download_url}"
-  curl -sSL "${download_url}" -o "${temp_file}"
+
+  status_code=$(curl --write-out "%{http_code}" -Lo "${temp_file}" -C - "${download_url}")
+
+  if test "${status_code}" -ne 200; then
+    echo "Binary for version '${version}' was not found or could not be retrieved."
+    exit 1
+  fi
+
   tar -xf "${temp_file}" --strip-components 1 -C "${bin_install_path}"
   rm "${temp_file}"
   chmod +x "${bin_path}"
