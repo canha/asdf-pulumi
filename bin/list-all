@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (C) 2019 Jorge Canha
+# Copyright (C) 2019-2020 Jorge Canha
 # 
 # This file is part of asdf-pulumi.
 # 
@@ -16,7 +16,6 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with asdf-pulumi.  If not, see <http://www.gnu.org/licenses/>.
-
 
 versions_path=https://www.pulumi.com/docs/get-started/install/versions/
 versions_list="$(curl -s $versions_path)"
@@ -34,8 +33,9 @@ ensure_compatible_version() {
   echo "${1}"
 }
 
-get_version(){
-  grep -oE "/releases/sdk/pulumi-v(.+)-linux-x64.tar.gz" \
+get_version() {
+  sed 's/http/\nhttp/g' \
+  | grep -oE "/releases/sdk/pulumi-v(.+)-linux-x64.tar.gz" \
   | sed 's|/releases/sdk/pulumi-v||;s|-linux-x64.tar.gz||;' \
   | sed -e '/^0.12/d ; /^0.13/d ; /^0.14/d ; /^0.15/d'
   # This line above is a small hack to delete older releases 
@@ -46,15 +46,15 @@ get_version(){
 
 [ "Linux" = "$(uname)" ] && sort="sort_linux" || sort="sort_darwin"
 
-sort_linux(){
+sort_linux() {
   tac | paste -sd " "
 }
 
-sort_darwin(){
+sort_darwin() {
   tail -r | tr '\n' ' '
 }
 
-list_all(){
+list_all() {
   echo "${versions_list}" | get_version | "${sort}"
 }
 
