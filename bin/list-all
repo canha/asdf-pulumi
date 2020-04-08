@@ -34,7 +34,7 @@ ensure_compatible_version() {
 }
 
 get_version() {
-  sed 's/http/\nhttp/g' \
+  awk '{gsub("http", "\nhttp", $0); print}' \
   | grep -oE "/releases/sdk/pulumi-v(.+)-linux-x64.tar.gz" \
   | sed 's|/releases/sdk/pulumi-v||;s|-linux-x64.tar.gz||;' \
   | sed -e '/^0.12/d ; /^0.13/d ; /^0.14/d ; /^0.15/d'
