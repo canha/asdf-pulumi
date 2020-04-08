@@ -8,26 +8,19 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
-
       matrix:
         os:
           - ubuntu-latest
           - macos-latest
-
     steps:
       - name: clone the plugin repo
-        uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
+        uses: actions/checkout@v2
       - name: clone asdf
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           repository: asdf-vm/asdf.git
-          ref: refs/heads/master
-          fetch-depth: 1
       - name: Setup asdf and run test
         run: |
           . ../asdf.git/asdf.sh
