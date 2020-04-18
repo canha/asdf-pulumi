@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
 # Copyright (C) 2019-2020 Jorge Canha
-# 
+#
 # This file is part of asdf-pulumi.
-# 
+#
 # asdf-pulumi is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # asdf-pulumi is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with asdf-pulumi.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -38,24 +38,20 @@ get_version() {
   | grep -oE "/releases/sdk/pulumi-v(.+)-linux-x64.tar.gz" \
   | sed 's|/releases/sdk/pulumi-v||;s|-linux-x64.tar.gz||;' \
   | sed -e '/^0.12/d ; /^0.13/d ; /^0.14/d ; /^0.15/d'
-  # This line above is a small hack to delete older releases 
+  # This line above is a small hack to delete older releases
   # with a different archive structure, most people shouldn't
   # need using an old legacy Pulumi versions.
   # TLDR: supporting only v0.16+ upwards
 }
 
-[ "Linux" = "$(uname)" ] && sort="sort_linux" || sort="sort_darwin"
-
-sort_linux() {
-  tac | paste -sd " "
-}
-
-sort_darwin() {
-  tail -r | tr '\n' ' '
+# stolen from https://github.com/rbenv/ruby-build/pull/631/files#diff-fdcfb8a18714b33b07529b7d02b54f1dR942
+sort_versions() {
+  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$//; G; s/\n/ /' | \
+    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
 }
 
 list_all() {
-  echo "${versions_list}" | get_version | "${sort}"
+  echo "${versions_list}" | get_version | sort_versions | tr '\n' ' '
 }
 
 list_all
