@@ -17,41 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with asdf-pulumi.  If not, see <http://www.gnu.org/licenses/>.
 
-versions_path=https://www.pulumi.com/docs/get-started/install/versions/
-versions_list="$(curl -s $versions_path)"
+set -euo pipefail
 
-ensure_compatible_version() {
-  semver=( ${1//./ } )
-  major="${semver[0]}"
-  minor="${semver[1]}"
+current_script_path=${BASH_SOURCE[0]}
+plugin_dir=$(dirname "$(dirname "$current_script_path")")
 
-  if [ $major -eq 0 ]; then
-    if [ $minor -lt 16 ]; then
-      return
-    fi
-  fi
-  echo "${1}"
-}
+# shellcheck source=../lib/utils.bash
+source "${plugin_dir}/lib/utils.bash"
 
-get_version() {
-  awk '{gsub("http", "\nhttp", $0); print}' \
-  | grep -oE "/releases/sdk/pulumi-v(.+)-linux-x64.tar.gz" \
-  | sed 's|/releases/sdk/pulumi-v||;s|-linux-x64.tar.gz||;' \
-  | sed -e '/^0.12/d ; /^0.13/d ; /^0.14/d ; /^0.15/d'
-  # This line above is a small hack to delete older releases
-  # with a different archive structure, most people shouldn't
-  # need using an old legacy Pulumi versions.
-  # TLDR: supporting only v0.16+ upwards
-}
-
-# stolen from https://github.com/rbenv/ruby-build/pull/631/files#diff-fdcfb8a18714b33b07529b7d02b54f1dR942
-sort_versions() {
-  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$//; G; s/\n/ /' | \
-    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
-}
-
-list_all() {
-  echo "${versions_list}" | get_version | sort_versions | tr '\n' ' '
-}
-
-list_all
+list_all_versions | sort_versions | xargs echo
