@@ -16,14 +16,14 @@ jobs:
       - checkout
       - run:
           name: "Install asdf"
-          command: "git clone https://github.com/asdf-vm/asdf.git asdf && . asdf/asdf.sh"
+          command: "git clone https://github.com/asdf-vm/asdf.git asdf"
       - run:
           name: "asdf plugin test"
-          command: "asdf plugin test pulumi . --asdf-plugin-gitref ${CIRCLE_BRANCH}"
+          command: ". asdf/asdf.sh && asdf plugin test pulumi . --asdf-plugin-gitref ${CIRCLE_BRANCH}"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  run-tests-workflow:
     jobs:
       - run-tests
