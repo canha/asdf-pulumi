@@ -15,6 +15,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Install asdf"
+          command: "git clone https://github.com/asdf-vm/asdf.git asdf && . asdf/asdf.sh"
+      - run:
           name: "asdf plugin test"
           command: "asdf plugin test pulumi . --asdf-plugin-gitref ${CIRCLE_BRANCH}"
 
