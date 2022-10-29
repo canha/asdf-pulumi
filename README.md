@@ -1,6 +1,6 @@
 # asdf-pulumi
 
-[![Build Status](https://travis-ci.org/canha/asdf-pulumi.svg?branch=master)](https://travis-ci.org/canha/asdf-pulumi)
+[![CircleCI](https://circleci.com/gh/canha/asdf-pulumi.svg?style=svg)](https://circleci.com/gh/canha/asdf-pulumi)
 
 [Pulumi](https://www.pulumi.com/product/#sdk) plugin for [asdf](https://github.com/asdf-vm/asdf) version manager
 
